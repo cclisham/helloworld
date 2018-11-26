@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#Set dmesg path variable
+DMESG="/var/log/dmesg"
+
+#Set Path for messages
+MESSAGES="/var/log/messages"
+
+
+#Tells you the exact time at which the script was run for troubleshooting.
+echo "Time stamp when Script was run."
+
+ date -u
+
+#This removes any existing output test file that contains errors in case this script was already run.
+
+rm $PWD/erroroutput.txt
+
+#If the user needs to know if the box needed a reboot after an exceptionally long time as well they can use the below varaible.
+if [ "$1" == "shutdown" ]
+then
+last reboot
+fi
+ 
+
+#Tells you if their are any errors in the DMESG log.
+
+echo "DMESG OUTPUT."
+grep -i -e "error" -e "crash" -e "fatal" $DMESG |& tee -a  $PWD/erroroutput.txt
+
+#Tells you if their are any errors in the messages after logging in as root log.
+echo "Message OUTPUT."
+su -c "grep -i -e "error" -e "crash" -e "fatal" $MESSAGES" |& tee -a  $PWD/erroroutput.txt
+
+
+
